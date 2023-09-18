@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "sybil-statistics"
+version = "0.1.0"
+description = "Сollects and aggregates data on multiple accounts simultaneously"
+authors = ["mishutka200101 <mishutka200101@mail.ru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+aiohttp = "^3.8.5"
+streamlit = "^1.26.0"
+pandas = "^2.1.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
