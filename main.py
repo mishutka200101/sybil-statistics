@@ -28,20 +28,30 @@ def parse_transactions(transactions: list):
         list: Список статистики, включая общее количество транзакций и количество транзакций для каждого адреса получателя.
     """
     SYNCSWAP = '0x2da10A1e27bF85cEdD8FFb1AbBe97e53391C0295'
+    WOOFI = '0xfd505702b37Ae9b626952Eb2DD736d9045876417'
     MAVERICK = '0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4'
     IZUMI = '0x943ac2310D9BC703d6AB5e5e76876e212100f894'
     SPACEFI = '0xbE7D1FD1f6748bbDefC4fbaCafBb11C6Fc506d1d'
     MERKLY = '0x5673B6e6e51dE3479B8deB22dF46B12308db5E1e'
 
-    txs, syncswap_count, maverick_count, izumi_count, spacefi_count, merkly_count = 0, 0, 0, 0, 0, 0
+    BRIDGE = ['0x80C67432656d59144cEFf962E8fAF8926599bCF8', '0xE4eDb277e41dc89aB076a1F049f4a3EfA700bCE8']
+
+    txs, syncswap_count, woofi_count, maverick_count, izumi_count, spacefi_count, merkly_count = 0, 0, 0, 0, 0, 0, 0
 
     if transactions:
         for transaction in transactions:
             if transaction['status'] == 'verified':
                 txs += 1
                 to = transaction['to']
+                _from = transaction['from']
+
+                # if _from in BRIDGE:
+                #     bridge_count = 1
+
                 if to == SYNCSWAP:
                     syncswap_count += 1
+                elif to == WOOFI:
+                    woofi_count += 1
                 elif to == MAVERICK:
                     maverick_count += 1
                 elif to == IZUMI:
@@ -54,6 +64,7 @@ def parse_transactions(transactions: list):
     result = [
         txs,
         syncswap_count,
+        woofi_count,
         maverick_count,
         izumi_count,
         spacefi_count,
@@ -198,10 +209,10 @@ def run_all(addresses: list) -> list:
 
     for i, address in enumerate(addresses):
         ETH, USDC, USDT = parse_tokens(tokens[i])
-        txs, syncswap_count, maverick_count, izumi_count, spacefi_count, merkly_count = parse_transactions(transactions[i])
+        txs, bridge_count, syncswap_count, maverick_count, izumi_count, spacefi_count, merkly_count = parse_transactions(transactions[i])
 
         result_list.append(
-            [address, ETH, USDC, USDT, txs, syncswap_count, maverick_count, izumi_count, spacefi_count, merkly_count]
+            [address, ETH, USDC, USDT, txs, bridge_count, syncswap_count, maverick_count, izumi_count, spacefi_count, merkly_count]
         )
 
     return result_list
@@ -226,6 +237,7 @@ try:
         'USDT',
         'txs',
         'SyncSwap',
+        'Woofi',
         'Maverick',
         'Izumi',
         'SpaceFi',
