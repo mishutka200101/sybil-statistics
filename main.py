@@ -1,7 +1,16 @@
 from aiohttp import ClientSession
 import asyncio
+import requests
 import streamlit as st
 import pandas as pd
+
+
+def get_eth_price():
+    try:
+        res = requests.get(url='https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USDT')
+        return float(res.json()["USDT"])
+    except Exception:
+        return 0
 
 
 def create_session() -> ClientSession:
@@ -207,9 +216,13 @@ def run_all(addresses: list) -> list:
 
     result_list = []
 
+    eth_price = get_eth_price()
+
     for i, address in enumerate(addresses):
         ETH, USDC, USDT = parse_tokens(tokens[i])
         txs, bridge_count, syncswap_count, maverick_count, izumi_count, spacefi_count, merkly_count = parse_transactions(transactions[i])
+
+        ETH = round(ETH * eth_price, 2)
 
         result_list.append(
             [address, ETH, USDC, USDT, txs, bridge_count, syncswap_count, maverick_count, izumi_count, spacefi_count, merkly_count]
@@ -232,7 +245,7 @@ try:
     data = run_all(addresses=addresses_stripped)
     columns = [
         'address',
-        'ETH',
+        'ETH in USD',
         'USDC',
         'USDT',
         'txs',
@@ -246,5 +259,11 @@ try:
     df = pd.DataFrame(data=data, columns=columns)
     df.index += 1
     st.dataframe(data=df, use_container_width=True)
+
+    eth_value = sum(df["ETH in USD"])
+    usdt_value = sum(df["USDT"])
+    usdc_value = sum(df["USDC"])
+    total_sum = eth_value + usdt_value + usdc_value
+    st.title(f"Total balance is: {round(total_sum, 2)}$")
 except Exception as e:
     st.error(f"An error occurred: {str(e)}")
