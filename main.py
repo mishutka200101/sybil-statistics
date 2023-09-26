@@ -49,7 +49,7 @@ def parse_transactions(transactions: list):
 
     if transactions:
         for transaction in transactions:
-            statuses = ['verified', 'committed']
+            statuses = ['verified', 'committed', 'proved']
             if transaction['status'] in statuses:
                 txs += 1
                 to = transaction['to']
